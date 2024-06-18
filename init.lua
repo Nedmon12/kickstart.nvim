@@ -71,7 +71,6 @@ Kickstart Guide:
     plugins or Neovim features used in Kickstart.
 
    NOTE: Look for lines like this
-
     Throughout the file. These are for you, the reader, to help you understand what is happening.
     Feel free to delete them once you know what you're doing, but they should serve as a guide
     for when you are first encountering a few different constructs in your Neovim config.
@@ -91,7 +90,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -239,7 +238,18 @@ require('lazy').setup({
 
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
-
+  {
+    'echasnovski/mini.hipatterns',
+    event = 'BufReadPre',
+    opts = {},
+  },
+  {
+    'windwp/nvim-autopairs',
+    config = function()
+      require('nvim-autopairs').setup {}
+    end,
+  },
+  -- #ffffff
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
   --    require('gitsigns').setup({ ... })
@@ -338,6 +348,7 @@ require('lazy').setup({
       -- After running this command, a window will open up and you're able to
       -- type in the prompt window. You'll see a list of `help_tags` options and
       -- a corresponding preview of the help.
+      --
       --
       -- Two important keymaps to use while in Telescope are:
       --  - Insert mode: <c-/>
@@ -506,6 +517,8 @@ require('lazy').setup({
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
           map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+          -- local fb_actions = require("telescope").extensions.file_browser.actions
+          -- map('n', fb_actions.create)
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -565,9 +578,9 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -575,7 +588,7 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
+        tsserver = {},
         --
 
         lua_ls = {
@@ -620,7 +633,28 @@ require('lazy').setup({
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
           end,
+
+          -- function(clangd)
+          --   local server = servers[clangd] or {}
+          --   server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capablities or {})
+          --   require('lspconfig')[clangd].setup(clangd)
+          -- end,
+          -- function(pyright)
+          --   local server = servers[pyright] or {}
+          --   server.capablities = vim.tbl_deep_extend('force', {}, capabilities, server.capablities or {})
+          --   require('lspconfig')[pyright].setup(pyright)
+          -- end,
+          -- function(tsserver)
+          --   local server = servers[tsserver] or {}
+          --   server.capablities = vim.tbl_deep_extend('force', {}, capabilities, server.capablities or {})
+          --   require('lspconfig')[tsserver].setup(tsserver)
+          -- end,
         },
+        -- ensure_installed = {
+        --   'clangd',
+        --   'pyright',
+        --   'tsserver',
+        -- },
       }
     end,
   },
@@ -682,12 +716,12 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
       },
       'saadparwaiz1/cmp_luasnip',
@@ -773,6 +807,13 @@ require('lazy').setup({
     end,
   },
 
+  {
+    'rafamadriz/friendly-snippets',
+    config = function()
+      require('luasnip.loaders.from_vscode').lazy_load()
+    end,
+  },
+
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -797,7 +838,7 @@ require('lazy').setup({
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
-      -- Better Around/Inside textobjects
+      -- Better Around/Inside ( textobjects )
       --
       -- Examples:
       --  - va)  - [V]isually select [A]round [)]paren
@@ -816,6 +857,7 @@ require('lazy').setup({
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
       local statusline = require 'mini.statusline'
+
       -- set use_icons to true if you have a Nerd Font
       statusline.setup { use_icons = vim.g.have_nerd_font }
 
@@ -835,7 +877,26 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'vim',
+        'vimdoc',
+        'javascript',
+        'typescript',
+        'css',
+        'gitignore',
+        'graphql',
+        'http',
+        'json',
+        'scss',
+        'sql',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -905,6 +966,25 @@ require('lazy').setup({
       task = '📌',
       lazy = '💤 ',
     },
+    -- {
+    --   'akinsho/bufferline.nvim',
+    --   event = 'VeryLazy',
+    --   keys = {
+    --     { '<Tab>', '<Cmd>BufferLineCycleNext<CR>', desc = 'Next tab' },
+    --     { '<S-Tab>', '<Cmd>BufferLineCyclePrev<CR>', desc = 'Prev tab' },
+    --   },
+    --   opts = {
+    --     options = {
+    --       mode = 'tabs',
+    --       show_buffer_close_icons = false,
+    --       show_close_icon = false,
+    --     },
+    --   },
+    -- },
+    -- { 'akinsho/bufferline.nvim', version = '*', dependencies = 'nvim-tree/nvim-web-devicons',
+    --     vim.opt.termguicolors = true
+    --     require("bufferline").setup{}
+    --   },
   },
 })
 
