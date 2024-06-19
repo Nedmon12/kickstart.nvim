@@ -173,7 +173,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-
+vim.keymap.set('n', '<C-n>', ':NvimTreeOpen<CR>')
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
 -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
@@ -363,13 +363,32 @@ require('lazy').setup({
       require('telescope').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
-        --
+        -- --
         -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+        --   defaults = {
+        --     file_ignore_patterns = {
+        --       'node_modules',
+        --     },
         --   },
         -- },
-        -- pickers = {}
+        -- defaults = {
+        --   vimgrep_arguments = {
+        --     'rg',
+        --     '--color=never',
+        --     '--no-heading',
+        --     '--with-filename',
+        --     '--line-number',
+        --     '--column',
+        --     '--smart-case',
+        --     '--hidden',
+        --     '--glob',
+        --   },
+        -- },
+        pickers = {
+          find_files = {
+            theme = 'dropdown',
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -418,7 +437,21 @@ require('lazy').setup({
       end, { desc = '[S]earch [N]eovim files' })
     end,
   },
-
+  -- { -- nvim tree because fuck find_files
+  --   'nvim-tree/nvim-tree.lua',
+  --   version = '*',
+  --   lazy = false,
+  --   dependencies = {
+  --     'nvim-tree/nvim-web-devicons',
+  --   },
+  --   config = function()
+  --     require('nvim-tree').setup {}
+  --   end,
+  -- },
+  {
+    'nvim-tree/nvim-tree.lua',
+    opts = {},
+  },
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
